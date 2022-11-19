@@ -53,11 +53,12 @@ void Interface::polynomial_regression(sf::RenderWindow &window, sf::View &d_view
         }
         input.close();
 
-        polynomial_regression_plot.setup(d_view);
-        polynomial_regression_plot.add_dataset(&p_x ,&p_y);
-        polynomial_regression_plot.setup_grid_and_axis();
-        polynomial_regression_plot.add_fit_polynom();
+        plot.setup_plot(d_view.getSize());
+        plot.add_dataset(&p_x ,&p_y);
+        plot.add_polynomial_regression();
+        plot.setup_axis();
+        plot.setup_grid();
         is_polynom_regression_changed = false;
     }
-    polynomial_regression_plot.draw(window);
+    plot.draw(window);
 }

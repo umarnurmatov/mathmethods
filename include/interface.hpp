@@ -18,7 +18,7 @@ class Interface
 public:
     Interface();
 
-    Plotter polynomial_regression_plot;
+    Plotter plot;
     bool is_polynom_regression_changed = true;
 
     void polynomial_regression(sf::RenderWindow &window, sf::View &view);

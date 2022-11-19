@@ -1,11 +1,11 @@
 #include "plotter.hpp"
 
-void Plotter::setup(sf::View d_view)
+void Plotter::setup_plot(sf::Vector2f _w_size)
 {
-    w_size = d_view.getSize();
+    w_size = _w_size;
     zero = sf::Vector2f(w_size.x / 2, w_size.y / 2);
 }
-void Plotter::setup_grid_and_axis()
+void Plotter::setup_grid()
 {
     int grid_step_x = fabs(p_x_min - p_x_max) / 10;
     int grid_step_y = fabs(p_y_min - p_y_max) / 10;
@@ -32,13 +32,17 @@ void Plotter::setup_grid_and_axis()
             grid_x.push_back(line);
         }
     }
-    
+}
+
+void Plotter::setup_axis()
+{
     // оси
-    x_axis[0] = sf::Vertex(sf::Vector2f(zero.x, w_size.y), sf::Color::Red);
-    x_axis[1] = sf::Vertex(sf::Vector2f(zero.x, 0), sf::Color::Red);
-    y_axis[0] = sf::Vertex(sf::Vector2f(w_size.x, zero.y), sf::Color::Red);
-    y_axis[1] = sf::Vertex(sf::Vector2f(0, zero.y), sf::Color::Red);
-    
+    x_axis.setSize(sf::Vector2f(w_size.x, AXIS_THICKNESS_PIXELS));
+    y_axis.setSize(sf::Vector2f(AXIS_THICKNESS_PIXELS, w_size.y));
+    x_axis.setPosition(sf::Vector2f(0, zero.y - AXIS_THICKNESS_PIXELS / 2));
+    y_axis.setPosition(sf::Vector2f(zero.x - AXIS_THICKNESS_PIXELS / 2, 0));
+    x_axis.setFillColor(sf::Color::Black);
+    y_axis.setFillColor(sf::Color::Black);
 }
 
 void Plotter::add_dataset(std::vector<float> *_p_x, std::vector<float> *_p_y)
@@ -63,27 +67,10 @@ void Plotter::add_dataset(std::vector<float> *_p_x, std::vector<float> *_p_y)
     }
 }
 
-void Plotter::draw(sf::RenderWindow &window)
-{
-    // исходные данные
-    for(sf::CircleShape p : points) window.draw(p);
-
-    // сетка
-    for(sf::VertexArray g : grid_x) window.draw(g);
-    for(sf::VertexArray g : grid_y) window.draw(g);
-
-    // оси
-    window.draw(x_axis, 2, sf::Lines);
-    window.draw(y_axis, 2, sf::Lines);
-
-    //полином
-    window.draw(&polynom[0], polynom.size(), sf::LinesStrip);
-}
-
-void Plotter::add_fit_polynom()
+void Plotter::add_polynomial_regression()
 {
     // полином
-    Polynomial_regression p(&p_x, &p_y, 4);
+    Polynomial_regression p(&p_x, &p_y, 10);
     std::vector<float> coeffs;
     p.get_coeffs(&coeffs);
 
@@ -93,4 +80,22 @@ void Plotter::add_fit_polynom()
         for(int i = 0; i < coeffs.size(); i++) y += pow(x, i) * coeffs[i];
         polynom.push_back(sf::Vertex(sf::Vector2f(zero.x + x * kx, w_size.y - zero.y - y * ky), sf::Color::Red));
     }
+}
+
+void Plotter::draw(sf::RenderWindow &window)
+{
+
+    // сетка
+    for(sf::VertexArray g : grid_x) window.draw(g);
+    for(sf::VertexArray g : grid_y) window.draw(g);
+
+    // оси
+    window.draw(x_axis);
+    window.draw(y_axis);
+
+    // данные
+    for(sf::CircleShape p : points) window.draw(p);
+
+    //полином
+    window.draw(&polynom[0], polynom.size(), sf::LinesStrip);
 }

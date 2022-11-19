@@ -8,6 +8,7 @@
 #include "polynomial_regression.hpp"
 
 #define POINT_RADIUS_PIXELS 5.f
+#define AXIS_THICKNESS_PIXELS 3.f
 
 class Plotter
 {
@@ -21,9 +22,11 @@ class Plotter
     std::vector<sf::VertexArray> grid_x;
     std::vector<sf::VertexArray> grid_y;
 
+    sf::RectangleShape x_axis;
+    sf::RectangleShape y_axis;
+
     std::vector<sf::CircleShape> points;
-    sf::Vertex x_axis[2];
-    sf::Vertex y_axis[2];
+    
 
     std::vector<sf::Vertex> polynom;
 
@@ -32,9 +35,14 @@ class Plotter
     float kx, ky;
 
 public:
-    void setup(sf::View d_view);
-    void setup_grid_and_axis();
+    void setup_plot(sf::Vector2f _w_size);
+
+    void setup_grid();
+    void setup_axis();
+
     void add_dataset(std::vector<float> *_p_x, std::vector<float> *_p_y);
+    void add_polynomial_regression();
+
     void draw(sf::RenderWindow &window);
-    void add_fit_polynom();
+
 };
